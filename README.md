@@ -1,2 +1,3 @@
 # Chat
-Abhi humko bhi nahi pata hum kya bana rahe hain :p
+
+A multi user chat application based on socket programming
