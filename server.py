@@ -47,7 +47,13 @@ while True:
 				connection_list.remove(socket)
 				del clients[socket]
 				continue
+
+			# user = clients[connection]
 			print("Message received from ", clients[socket]["data"].decode("utf-8"), ":", message["data"].decode("utf-8"))
+
+			user_data = clients[socket]["data"]
+			user_header =  f"{len(user_data.decode('utf-8')):<{HEADER_LENGTH}}".encode('utf-8')
+
 			for client in connection_list :
 				if client != socket and client != server:
-					client.send(user["header"] + user["data"] + message["header"] + message["data"])
+					client.send(user_header + user_data + message["header"] + message["data"])
