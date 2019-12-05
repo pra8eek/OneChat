@@ -6,6 +6,47 @@ import socket
 import sys
 from threading import Thread
 import tkinter
+from tkinter import ttk
+from PIL import Image, ImageTk
+
+borderImageData = '''
+    R0lGODlhQABAAPcAAHx+fMTCxKSipOTi5JSSlNTS1LSytPTy9IyKjMzKzKyq
+    rOzq7JyanNza3Ly6vPz6/ISChMTGxKSmpOTm5JSWlNTW1LS2tPT29IyOjMzO
+    zKyurOzu7JyenNze3Ly+vPz+/OkAKOUA5IEAEnwAAACuQACUAAFBAAB+AFYd
+    QAC0AABBAAB+AIjMAuEEABINAAAAAHMgAQAAAAAAAAAAAKjSxOIEJBIIpQAA
+    sRgBMO4AAJAAAHwCAHAAAAUAAJEAAHwAAP+eEP8CZ/8Aif8AAG0BDAUAAJEA
+    AHwAAIXYAOfxAIESAHwAAABAMQAbMBZGMAAAIEggJQMAIAAAAAAAfqgaXESI
+    5BdBEgB+AGgALGEAABYAAAAAAACsNwAEAAAMLwAAAH61MQBIAABCM8B+AAAU
+    AAAAAAAApQAAsf8Brv8AlP8AQf8Afv8AzP8A1P8AQf8AfgAArAAABAAADAAA
+    AACQDADjAAASAAAAAACAAADVABZBAAB+ALjMwOIEhxINUAAAANIgAOYAAIEA
+    AHwAAGjSAGEEABYIAAAAAEoBB+MAAIEAAHwCACABAJsAAFAAAAAAAGjJAGGL
+    AAFBFgB+AGmIAAAQAABHAAB+APQoAOE/ABIAAAAAAADQAADjAAASAAAAAPiF
+    APcrABKDAAB8ABgAGO4AAJAAqXwAAHAAAAUAAJEAAHwAAP8AAP8AAP8AAP8A
+    AG0pIwW3AJGSAHx8AEocI/QAAICpAHwAAAA0SABk6xaDEgB8AAD//wD//wD/
+    /wD//2gAAGEAABYAAAAAAAC0/AHj5AASEgAAAAA01gBkWACDTAB8AFf43PT3
+    5IASEnwAAOAYd+PuMBKQTwB8AGgAEGG35RaSEgB8AOj/NOL/ZBL/gwD/fMkc
+    q4sA5UGpEn4AAIg02xBk/0eD/358fx/4iADk5QASEgAAAALnHABkAACDqQB8
+    AMyINARkZA2DgwB8fBABHL0AAEUAqQAAAIAxKOMAPxIwAAAAAIScAOPxABIS
+    AAAAAIIAnQwA/0IAR3cAACwAAAAAQABAAAAI/wA/CBxIsKDBgwgTKlzIsKFD
+    gxceNnxAsaLFixgzUrzAsWPFCw8kDgy5EeQDkBxPolypsmXKlx1hXnS48UEH
+    CwooMCDAgIJOCjx99gz6k+jQnkWR9lRgYYDJkAk/DlAgIMICkVgHLoggQIPT
+    ighVJqBQIKvZghkoZDgA8uDJAwk4bDhLd+ABBmvbjnzbgMKBuoA/bKDQgC1F
+    gW8XKMgQOHABBQsMI76wIIOExo0FZIhM8sKGCQYCYA4cwcCEDSYPLOgg4Oro
+    uhMEdOB84cCAChReB2ZQYcGGkxsGFGCgGzCFCh1QH5jQIW3xugwSzD4QvIIH
+    4s/PUgiQYcCG4BkC5P/ObpaBhwreq18nb3Z79+8Dwo9nL9I8evjWsdOX6D59
+    fPH71Xeef/kFyB93/sln4EP2Ebjegg31B5+CEDLUIH4PVqiQhOABqKFCF6qn
+    34cHcfjffCQaFOJtGaZYkIkUuljQigXK+CKCE3po40A0trgjjDru+EGPI/6I
+    Y4co7kikkAMBmaSNSzL5gZNSDjkghkXaaGIBHjwpY4gThJeljFt2WSWYMQpZ
+    5pguUnClehS4tuMEDARQgH8FBMBBBExGwIGdAxywXAUBKHCZkAIoEEAFp33W
+    QGl47ZgBAwZEwKigE1SQgAUCUDCXiwtQIIAFCTQwgaCrZeCABAzIleIGHDD/
+    oIAHGUznmXABGMABT4xpmBYBHGgAKGq1ZbppThgAG8EEAW61KwYMSOBAApdy
+    pNp/BkhAAQLcEqCTt+ACJW645I5rLrgEeOsTBtwiQIEElRZg61sTNBBethSw
+    CwEA/Pbr778ABywwABBAgAAG7xpAq6mGUUTdAPZ6YIACsRKAAbvtZqzxxhxn
+    jDG3ybbKFHf36ZVYpuE5oIGhHMTqcqswvyxzzDS/HDMHEiiggQMLDxCZXh8k
+    BnEBCQTggAUGGKCB0ktr0PTTTEfttNRQT22ABR4EkEABDXgnGUEn31ZABglE
+    EEAAWaeN9tpqt832221HEEECW6M3wc+Hga3SBgtMODBABw00UEEBgxdO+OGG
+    J4744oZzXUEDHQxwN7F5G7QRdXxPoPkAnHfu+eeghw665n1vIKhJBQUEADs=
+'''
 
 def receive():
 	"""Handles receiving of messages."""
@@ -17,11 +58,17 @@ def receive():
 				sys.exit()
 
 			username_length = int(username_header.decode("utf-8"))
-			username = client.recv(username_length).decode("utf-8")
+			username = client.recv(username_length).decode("utf-8")	
 
 			message_header = client.recv(HEADER_LENGTH)
 			message_length = int(message_header.decode("utf-8"))
 			message = client.recv(message_length).decode("utf-8")
+
+			if username == "$Server$" :
+				msg_list.configure(state='normal')
+				msg_list.insert(tkinter.END, message + "\n")
+				msg_list.configure(state='disabled')
+				continue
 
 			msg_list.configure(state='normal')
 			msg_list.insert(tkinter.END, username + " > " + message + "\n")
@@ -49,7 +96,7 @@ def receive():
 
 '''
 
-def send():
+def send(random = None):
 	message = my_msg.get()
 	my_msg.set("") 
 	if message == "{quit}":
@@ -71,7 +118,7 @@ def on_closing(event=None):
 
 
 top = tkinter.Tk()
-top.title("A gaye batiyane")
+top.title("OneChat")
 
 messages_frame = tkinter.Frame(top)
 my_msg = tkinter.StringVar()  # For the messages to be sent.
@@ -79,13 +126,14 @@ my_msg = tkinter.StringVar()  # For the messages to be sent.
 scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
 # Following will contain the messages.
 
-msg_list = tkinter.Text(messages_frame, state='disabled', height=15, width=50, yscrollcommand=scrollbar.set)
+msg_list = tkinter.Text(messages_frame, state='disabled', height=15, width=50, yscrollcommand=scrollbar.set, font=('Times New Roman', 16))
 scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand =  True)
 
 msg_list.pack()
 msg_list.configure(state='normal')
-msg_list.insert(tkinter.END, "Wecome to Hooli Chat! This is the chat-pakoda wali chat. Ok bye\n")
+msg_list.insert(tkinter.END, "Welcome to OneChat!\n")
+
 msg_list.configure(state='disabled')
 
 # messages_frame.insert(tkinter.END, "Just a text Widget\nin two lines\n")
@@ -94,14 +142,21 @@ top.protocol("WM_DELETE_WINDOW", on_closing)
 
 messages_frame.pack()
 
-entry_field = tkinter.Entry(top, textvariable=my_msg)
+style = ttk.Style()
+borderImage = tkinter.PhotoImage("borderImage", data=borderImageData)
+style.element_create("RoundedFrame", "image", borderImage, border=16, sticky="nsew")
+style.layout("RoundedFrame",[("RoundedFrame", {"sticky": "nsew"})])
+frame1 = ttk.Frame(style="RoundedFrame", padding=10, width = 30)
+entry_field = tkinter.Entry(frame1, textvariable=my_msg, borderwidth=0, highlightthickness=0, width=30)
+entry_field.pack(fill="both", expand=True)
 entry_field.bind("<Return>", send)
-entry_field.pack()
-send_button = tkinter.Button(top, text="Send", command=send)
-send_button.pack()
+frame1.pack(side=tkinter.LEFT, fill="both", expand=True, padx=10, pady=10)
 
-photo = tkinter.PhotoImage(file = "./send.png") 
-tkinter.Button(top, text = 'Send', image = photo)
+send_button = tkinter.Button(top, text="Send", command=send)
+photo = tkinter.PhotoImage(file = "paper-plane.png") 
+photo = photo.subsample(15) 
+send_button.config(image = photo)
+send_button.pack(side=tkinter.RIGHT)
 
 #----Now comes the sockets part----
 

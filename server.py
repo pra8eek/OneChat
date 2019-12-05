@@ -35,17 +35,37 @@ while True:
 			user = receive_message(connection)
 			if user is False :
 				continue
+
 			connection_list.append(connection)
 			clients[connection] = user
+			
+			user_data = f"$Server$".encode('utf-8')
+			user_header =  f"{len(user_data.decode('utf-8')):<{HEADER_LENGTH}}".encode('utf-8')
+			message_data = f"{user['data'].decode('utf-8')} has joined the chat".encode("utf-8")
+			message_header = f"{len(message_data.decode('utf-8')):<{HEADER_LENGTH}}".encode('utf-8')
+			for client in connection_list :
+				if client != server and client != connection:
+					client.send(user_header + user_data + message_header + message_data)
+
 			print(user["data"].decode("utf-8"), " is now connected")
 			# connection.send(bytes("You are connected", "utf-8"))
 
 		else :
 			message = receive_message(socket)
 			if message is False :
+
+				user_data = f"$Server$".encode('utf-8')
+				user_header =  f"{len(user_data.decode('utf-8')):<{HEADER_LENGTH}}".encode('utf-8')
+				message_data = f"{clients[socket]['data'].decode('utf-8')} has left the chat".encode("utf-8")
+				message_header = f"{len(message_data.decode('utf-8')):<{HEADER_LENGTH}}".encode('utf-8')
+				for client in connection_list :
+					if client != server and client != socket:
+						client.send(user_header + user_data + message_header + message_data)
+				
 				print("Connection closed from ", clients[socket]["data"].decode("utf-8"))
 				connection_list.remove(socket)
-				del clients[socket]
+				del clients[socket]		
+	
 				continue
 
 			# user = clients[connection]
