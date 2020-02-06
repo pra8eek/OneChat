@@ -44,7 +44,7 @@ def meme(update, context):
 		elif subr == "code" :
 			subreddit = "ProgrammerHumor"
 		elif subr == "ouija" :
-			subreddit = "jesuschristuoija"
+			subreddit = "jesuschristouija"
 		elif subr == "cricket" :
 			subreddit = "cricketshitpost"	
 		elif subr == "meirl" :
