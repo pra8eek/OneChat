@@ -2,6 +2,8 @@ from telegram.ext import CommandHandler, MessageHandler, Filters, Updater
 import telegram
 import logging
 import praw
+import requests
+from bs4 import BeautifulSoup
 
 telegram_token = "1090442251:AAFeDFouF4nXiZmOf5XgBoxjzNEJPKEbrLk" 
 reddit_id = "rNo7QxlenjQfZQ"
@@ -38,20 +40,29 @@ def meme(update, context):
 		print(subr)
 		if subr == "menu" :
 			fetched = True
-			context.bot.send_message(chat_id=update.effective_chat.id, text="Here are the categories: cricket | ouija | code | meirl | gay")
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Here are the categories: ttt | cricket | ouija | code | meirl | gay")
 			context.bot.send_message(chat_id=update.effective_chat.id, text="Happy to add more. You already know the developer")
 			return
 		elif subr == "code" :
 			subreddit = "ProgrammerHumor"
 		elif subr == "ouija" :
-			subreddit = "jesuschristouija"
+			subreddit = "jesuschristuoija"
+		elif subr == "ttt" :
+			subreddit = "technicallythetruth"
 		elif subr == "cricket" :
 			subreddit = "cricketshitpost"	
 		elif subr == "meirl" :
 			subreddit = "me_irl"
 		elif subr == "gay" :
 			subreddit = "SuddenlyGay"
+		elif choice == "custom" :
+			try :
+				subreddit = context.args[1]
+			except :
+				context.bot.send_message(chat_id=update.effective_chat.id, text="Abeyy Saale !!!")
+				fetched = True
 		else :
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Not a valid category!!! But memes fir bhi milenge")
 			subreddit = "2meirl4meirl"
 	except :
 		subreddit = "2meirl4meirl"
@@ -129,7 +140,14 @@ def boob(update, context):
 			subreddit = "pussy"
 		elif choice == "ass" :
 			subreddit = "ass"
+		elif choice == "custom" :
+			try :
+				subreddit = context.args[1]
+			except :
+				context.bot.send_message(chat_id=update.effective_chat.id, text="Abeyy Saale !!!")
+				fetched = True
 		else :
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Not a valid category! But hum kisi ko khali hath nahi bhejte")
 			subreddit = "nsfw"
 	except :
 		 subreddit = "nsfw"
@@ -167,6 +185,7 @@ def boob(update, context):
 				time = "all"
 			if k > 200 :
 				context.bot.send_message(chat_id=update.effective_chat.id, text="Something went wrong! Try with a lower count")
+				fetched = True
 
 
 def start(update, context):
@@ -176,7 +195,6 @@ def start(update, context):
 def reply(update, context):
 	context.bot.send_message(chat_id=update.effective_chat.id, text="Paka mat na *betichod*",
 							 parse_mode=telegram.ParseMode.MARKDOWN)
-
 
 def who(update, context):
     for x in context.args :
@@ -198,16 +216,112 @@ def who(update, context):
     	context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
 
 
+def gifs(update, context):
+	try:
+		k = int(context.args[-1])
+		if k > 5 :
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Itna mat hila bhai, gand fat jayegi")
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Max 5 milenge, ye le")
+			k = 5
+	except :
+		k = 1
+
+	fetched = False
+	kcopy = k
+
+	try :
+		choice = context.args[0]
+		if choice == "menu" :
+			fetched = True
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Here are the categories: " + 
+				"real | teen | boob | cute | pussy | ass | celeb | toocute | petite")
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Happy to add more. You already know the developer")
+		if choice == "real" :
+			subreddit = "realgirls"
+		elif choice == "celeb" :
+			subreddit = "celebsnsfw"
+		elif choice == "toocute" :
+			subreddit = "toocuteforporn"
+		elif choice == "petite" :
+			subreddit = "petitegonewild"
+		elif choice == "teen" :
+			subreddit = "legalteens"
+		elif choice == "boob" :
+			subreddit = "Boobies"
+		elif choice == "cute" :
+			subreddit = "adorableporn"
+		elif choice == "pussy" :
+			subreddit = "pussy"
+		elif choice == "ass" :
+			subreddit = "ass"
+		elif choice == "custom" :
+			try :
+				subreddit = context.args[1]
+			except :
+				context.bot.send_message(chat_id=update.effective_chat.id, text="Abeyy Saale !!!")
+				fetched = True
+		else :
+			context.bot.send_message(chat_id=update.effective_chat.id, text="Not a valid category! But hum kisi ko khali hath nahi bhejte")
+			subreddit = "nsfw_gif"
+	except :
+		 subreddit = "nsfw_gif"
+
+	if not fetched :
+		print("subreddit is: ", subreddit)
+		print("count is: ", k)
+
+	time = "day"
+
+	while not fetched :
+		fetchCount = 0
+
+		print("Searching")
+		for submission in reddit.subreddit(subreddit).top(time_filter = time, limit = k) :
+			if len(submission.url) > 19 and submission.url[:19] == "https://gfycat.com/" :
+				fetchCount += 1
+	
+		if fetchCount >=  kcopy:
+			sent = 0 
+			fetched = True
+			print("Sending ")
+
+			for submission in reddit.subreddit(subreddit).top(time_filter = time, limit = k) :
+				if len(submission.url) > 19 and submission.url[:19] == "https://gfycat.com/" :
+					sent += 1
+					print("gyfcat wala hai : ", submission.url)
+					page = requests.get(submission.url)
+					soup = BeautifulSoup(page.text, 'html5lib') 
+					path = soup.find("video", {"class" : "video media"}).findAll("source")[0]
+					context.bot.send_video(chat_id=update.effective_chat.id, video=path.get("src"))
+					if sent == kcopy :
+						break
+			print("Sent")
+		else :
+			k = k*2
+			k = k*2
+			if k > 100 :
+				time = "all"
+			if k > 200 :
+				context.bot.send_message(chat_id=update.effective_chat.id, text="Something went wrong! Try with a lower count")
+				fetched = True
+
+
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(MessageHandler(Filters.text, reply))
 dispatcher.add_handler(CommandHandler('who', who))
 dispatcher.add_handler(CommandHandler('meme', meme))
 dispatcher.add_handler(CommandHandler('nsfw', boob))
+dispatcher.add_handler(CommandHandler('gif', gifs))
+
 
 def memetrial():
 	for submission in reddit.subreddit("nsfw_gif").top(time_filter = "day", limit = 20) :
-		print(submission.url)
-		print()
+		if len(submission.url) > 19 and submission.url[:19] == "https://gfycat.com/" :
+			print("gyfcat wala hai : ", submission.url)
+			page = requests.get(submission.url)
+			soup = BeautifulSoup(page.text, 'html5lib') 
+			path = soup.find("video", {"class" : "video media"}).findAll("source")[0]
+			print(path.get("src"))
 
 # memetrial()
 updater.start_polling()
