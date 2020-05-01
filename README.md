@@ -18,9 +18,7 @@ Let's see a conversation between 2 stoners, Ramesh and Suresh. This is how Rames
 
 <img src="/images/Screenshot from 2020-05-01 14-13-04.png" alt="Ramesh's chatscreen">
 
-The chat window for Suresh is almost the same. Here is what he sees
-
-<img src="/images/Screenshot from 2020-05-01 14-11-51.png" alt="Suresh's chatscreen">
+The chat window for Suresh is almost the same. 
 
 And all the chats get logged on the console too.
 
@@ -29,6 +27,7 @@ And all the chats get logged on the console too.
 ## How to use it
 - Just clone the repository and execute ```server.py``` on your terminal
 - And in client_gui.py, change line 180 with your server's IP Address
+- Install dependencies, ```pip install Pillow ```.
 - Connect the server with upto 5 systems in the same network, and execute ```client_gui.py``` for endless fun
 
 *P.S- This program can be extended to work from just LAN to the entire internet. Any PR in this direction would be highly appreciated*
